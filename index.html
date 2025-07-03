@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100">
+<head>
+  <meta charset="UTF-8" />
+  <title>Poultry Shop Order Calculator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-indigo-600">🐔 Poultry Shop Order Calculator</h2>
+
+    <div class="space-y-4">
+      <div>
+        <label class="block font-medium mb-1">Number of Legs</label>
+        <input type="number" id="legs" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Number of Wings</label>
+        <input type="number" id="wings" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+      <div>
+        <label class="block font-medium mb-1">Number of Flesh Portions</label>
+        <input type="number" id="flesh" min="0" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      </div>
+
+      <div class="flex space-x-2">
+        <button onclick="calculate()" class="flex-1 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition">Calculate</button>
+        <button onclick="clearInputs()" class="flex-1 bg-gray-500 text-white py-2 rounded hover:bg-gray-600 transition">Clear</button>
+      </div>
+
+      <button onclick="downloadReport()" id="downloadBtn" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition hidden">Download Report</button>
+    </div>
+
+    <div id="result" class="mt-6 p-4 bg-gray-50 border rounded hidden"></div>
+  </div>
+
+  <script>
+    let reportText = '';
+
+    function calculate() {
+      const legs = parseInt(document.getElementById('legs').value) || 0;
+      const wings = parseInt(document.getElementById('wings').value) || 0;
+      const flesh = parseInt(document.getElementById('flesh').value) || 0;
+
+      const LEG_WEIGHT = 0.25; // kg
+      const WING_WEIGHT = 0.25; // kg
+      const FLESH_WEIGHT = 1.0; // kg
+
+      const CHICKEN_LEGS = 2;
+      const CHICKEN_WINGS = 2;
+      const CHICKEN_FLESH = 1;
+
+      const chickensForLegs = Math.ceil(legs / CHICKEN_LEGS);
+      const chickensForWings = Math.ceil(wings / CHICKEN_WINGS);
+      const chickensForFlesh = Math.ceil(flesh / CHICKEN_FLESH);
+
+      const totalChickens = Math.max(chickensForLegs, chickensForWings, chickensForFlesh);
+
+      const remainingLegs = totalChickens * CHICKEN_LEGS - legs;
+      const remainingWings = totalChickens * CHICKEN_WINGS - wings;
+      const remainingFlesh = totalChickens * CHICKEN_FLESH - flesh;
+
+      const orderWeight = legs * LEG_WEIGHT + wings * WING_WEIGHT + flesh * FLESH_WEIGHT;
+      const remainingWeight = remainingLegs * LEG_WEIGHT + remainingWings * WING_WEIGHT + remainingFlesh * FLESH_WEIGHT;
+
+      const resultHTML = `
+        <h3 class="text-lg font-semibold mb-2">Results</h3>
+        <p><strong>Total order weight:</strong> ${orderWeight.toFixed(2)} kg</p>
+        <p><strong>Whole chickens needed:</strong> ${totalChickens}</p>
+        <p><strong>Remaining parts:</strong></p>
+        <ul class="list-disc list-inside ml-4">
+          <li>Legs: ${remainingLegs}</li>
+          <li>Wings: ${remainingWings}</li>
+          <li>Flesh portions: ${remainingFlesh}</li>
+        </ul>
+        <p><strong>Remaining weight:</strong> ${remainingWeight.toFixed(2)} kg</p>
+      `;
+
+      reportText = `Poultry Shop Order Report\n\n` +
+                   `Total order weight: ${orderWeight.toFixed(2)} kg\n` +
+                   `Whole chickens needed: ${totalChickens}\n` +
+                   `Remaining parts:\n` +
+                   `- Legs: ${remainingLegs}\n` +
+                   `- Wings: ${remainingWings}\n` +
+                   `- Flesh: ${remainingFlesh}\n` +
+                   `Remaining weight: ${remainingWeight.toFixed(2)} kg`;
+
+      document.getElementById('result').innerHTML = resultHTML;
+      document.getElementById('result').classList.remove('hidden');
+      document.getElementById('downloadBtn').classList.remove('hidden');
+    }
+
+    function clearInputs() {
+      document.getElementById('legs').value = '';
+      document.getElementById('wings').value = '';
+      document.getElementById('flesh').value = '';
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('downloadBtn').classList.add('hidden');
+    }
+
+    function downloadReport() {
+      const blob = new Blob([reportText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'poultry_shop_report.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
