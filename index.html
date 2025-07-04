@@ -8,7 +8,6 @@
 <body class="flex items-center justify-center min-h-screen">
   <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
     <h2 class="text-2xl font-bold mb-6 text-center text-indigo-600">🐔 Poultry Shop Order Calculator</h2>
-
     <div class="space-y-4">
       <div>
         <label class="block font-medium mb-1">Number of Legs</label>
@@ -42,6 +41,10 @@
       const wings = parseInt(document.getElementById('wings').value) || 0;
       const flesh = parseInt(document.getElementById('flesh').value) || 0;
 
+      if (legs<=0 && wings<=0 && flesh <=0){
+        alert ('Enter the valid input');
+        return ;
+      }
       const LEG_WEIGHT = 0.25; // kg
       const WING_WEIGHT = 0.25; // kg
       const FLESH_WEIGHT = 1.0; // kg
